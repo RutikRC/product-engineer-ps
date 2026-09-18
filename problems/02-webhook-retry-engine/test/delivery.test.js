@@ -1,6 +1,5 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
-import { createServer } from 'node:net';
 import { createTestkit } from './helpers/testkit.js';
 import {
   startScriptedReceiver,
@@ -178,20 +177,19 @@ test('a retryable 429 with Retry-After defers the next attempt past the header',
 });
 
 test('network errors are retryable and the event recovers once the endpoint is reachable', async (t) => {
-  const probe = createServer();
-  await new Promise((resolve) => probe.listen(0, '127.0.0.1', resolve));
-  const deadPort = probe.address().port;
-  await new Promise((resolve) => probe.close(resolve));
-  // Port was bound then released: nothing is listening there now.
-
+  // A receiver that accepts the TCP connection and then destroys it, which
+  // the client observes as a network error (no HTTP response at all).
+  // Deterministic: no reliance on a "free" port (racy under parallel runs).
+  const deadEndpoint = await startScriptedReceiver(async () => ({ destroy: true }));
   const kit = createTestkit();
   const receiver = await startScriptedReceiver(statusResponder(200));
   t.after(() => {
+    deadEndpoint.close();
     receiver.close();
     kit.close();
   });
 
-  kit.service.config.webhookUrl = `http://127.0.0.1:${deadPort}/webhook`;
+  kit.service.config.webhookUrl = deadEndpoint.url;
   kit.store.ingest(makeIncident('evt_net'));
 
   const results = await kit.service.scheduler.processDue();

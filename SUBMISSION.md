@@ -12,7 +12,7 @@
 
 ## Run the project
 
-Prerequisites: **Node.js 20+** (developed and tested on Node 24) and a shell with `npm`. SQLite is embedded through `better-sqlite3`, so no server/database install is needed.
+Prerequisites: **Node.js 22+** (developed and validated on Node 24.x; the test suite and `npm run smoke` use the `node:child_process` / `node:os` modules introduced in Node 22) and a shell with `npm`. SQLite is embedded through `better-sqlite3`, so no server/database install is needed.
 
 ```text
 cd problems/02-webhook-retry-engine
@@ -22,6 +22,8 @@ npm install
 npm run receiver
 
 # Terminal 2 – the engine (accepts events, retries deliveries)
+# Shell syntax below is Windows-cmd. PowerShell:  $env:WEBHOOK_URL = 'http://127.0.0.1:9099/webhook'
+# bash/zsh:                                        export WEBHOOK_URL=http://127.0.0.1:9099/webhook
 set WEBHOOK_URL=http://127.0.0.1:9099/webhook
 set RETRY_MAX_ATTEMPTS=3
 set RETRY_BASE_DELAY_MS=1000
@@ -29,7 +31,7 @@ set RETRY_JITTER_MS=0
 npm start
 ```
 
-**Successful scenario** (AC1):
+**Successful scenario** (AC1) — examples use Windows-cmd quoting; PowerShell/Unix use single quotes around the JSON, or run `npm run demo` which replays every scenario with no shell quoting:
 
 ```text
 curl -X POST http://127.0.0.1:8010/events ^
@@ -45,8 +47,11 @@ curl http://127.0.0.1:8010/events/evt_1
 
 ```text
 curl -X POST http://127.0.0.1:9099/__control -H "content-type: application/json" -d "{\"mode\":\"fail-n\",\"status\":500,\"remaining\":2}"
-# now POST another event (it fails twice, then succeeds once the receiver is "ok" again)
+# now POST another event *before* toggling anything: with "fail-n" the
+# receiver's next 2 deliveries return 500, and attempt #3 auto-recovers (200)
+# because remaining was set to 2. Watch the attempt list show 500 -> 500 -> 200.
 curl -X POST http://127.0.0.1:9099/__control -H "content-type: application/json" -d "{\"mode\":\"ok\"}"
+# (this last toggle simply puts the receiver back to 200 for later events)
 
 # permanent failure / exhaustion: leave mode at {"mode":"fail","status":503} so all attempts fail
 curl http://127.0.0.1:8010/events/<eventId>   # inspect state and ordered attempt history
@@ -67,7 +72,7 @@ To verify a process restart mid-flight (durability): kill the engine while an ev
 ## Run the tests
 
 ```text
-npm test            # node --test, 27 tests, ~1–2 s, no external services, no real-time sleeps
+npm test            # node --test, 27 tests, ~2 s, no external services, no real-time sleeps
 ```
 
 | Tests | What they cover |
@@ -126,6 +131,7 @@ POST /events (Express API)          GET /events, GET /events/:eventId, GET /heal
 - The mock receiver and the local HTTP transport are the only tested delivery targets; no TLS/mTLS/request-signing (out of scope).
 - No auth, no dashboard, no rate limiting (all explicitly out of scope).
 - Attempt response bodies are retained up to `ATTEMPT_BODY_MAX_BYTES` and truncated; payloads and response bodies are never written to logs.
+
 ### Decisions the brief requires documenting
 
 - **Retryable**: HTTP `408, 425, 429, 500, 502, 503, 504` and any network error (timeout, connection refused, DNS, reset). **Not retryable**: all other `4xx` and any `3xx` (we do not follow redirects for webhook endpoints — the configured URL is expected to be exact). Classified table-driven in `src/retryPolicy.js`.
