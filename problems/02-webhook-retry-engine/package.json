@@ -4,7 +4,7 @@
   "description": "Problem 2: Webhook Retry Engine - reliable event delivery with idempotent ingestion, bounded retries, and inspectable attempt history.",
   "type": "module",
   "engines": {
-    "node": ">=22"
+    "node": ">=20"
   },
   "scripts": {
     "start": "node src/main.js",

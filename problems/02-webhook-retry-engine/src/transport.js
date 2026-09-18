@@ -26,13 +26,13 @@ export function createHttpTransport({
   return {
     async deliver({ url, event }) {
       let response;
-      try {
-        const controller = new AbortController();
-        const timer = setTimeout(() => {
-          controller.abort(new Error(`delivery timed out after ${timeoutMs}ms`));
-        }, timeoutMs);
-        timer.unref?.();
+      const controller = new AbortController();
+      const timer = setTimeout(() => {
+        controller.abort(new Error(`delivery timed out after ${timeoutMs}ms`));
+      }, timeoutMs);
+      timer.unref?.();
 
+      try {
         response = await fetchImpl(url, {
           method: 'POST',
           headers: {
@@ -56,6 +56,8 @@ export function createHttpTransport({
           retryAfterMs: null,
           error: describeNetworkError(error, timeoutMs),
         };
+      } finally {
+        clearTimeout(timer);
       }
 
       const status = response.status;

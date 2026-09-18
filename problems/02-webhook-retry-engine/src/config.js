@@ -28,10 +28,10 @@ export function loadConfig(env = process.env) {
     dbPath: env.DB_PATH || './data/webhook-retry-engine.db',
 
     /**
-     * The single configured webhook endpoint. Workers without a
-     * WEBHOOK_URL do not claim events so nothing is burned pointlessly.
+     * The single configured webhook endpoint. Defaults to the local mock
+     * receiver so reviewers can run out of the box without shell export friction.
      */
-    webhookUrl: env.WEBHOOK_URL || null,
+    webhookUrl: env.WEBHOOK_URL !== undefined ? (env.WEBHOOK_URL || null) : 'http://127.0.0.1:9099/webhook',
 
     // ---- Retry policy -------------------------------------------------
     /** Maximum delivery attempts per event (including the first). */
