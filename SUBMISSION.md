@@ -4,7 +4,7 @@
 
 - **Name:** Rutik Ravindra Chavan
 - **Email:** chavanrutik133@gmail.com
-- **GitHub:** _(to fill in)_
+- **GitHub:** https://github.com/RutikRC/product-engineer-ps.git
 - **Selected problem:** Problem 2 – Webhook Retry Engine
 - **Demo video:** _(link to Loom/YouTube/Drive ~3–5 min video; see "Demo checklist" below for what it shows)_
 
