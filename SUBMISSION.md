@@ -173,4 +173,16 @@ The 3–5 minute demo video walks through, using a screen recording with narrati
 
 ## Credibility note
 
-_(Describe one product or system you previously helped ship: the problem it solved, your personal contribution, the scale/operational complexity, one difficult engineering or product decision, and a public link or other evidence when available. Anonymize what you need to; approximate figures are fine.)_
+## Credibility note
+
+### Prediction Market Platform
+
+At Blocsys, I helped architect and build a prediction market platform with a real-time order book and trading infrastructure.
+
+My main contribution was on the backend and real-time systems: I worked on the Node.js/NestJS microservices, WebSocket-based trade processing, Redis Pub/Sub, API architecture, and production infrastructure. The platform processed 100,000+ trades and more than $5M in trading volume, while supporting 3,000+ concurrent users.
+
+One of the key engineering decisions was using Redis Pub/Sub and WebSockets for real-time order-book and portfolio updates instead of relying on polling. This allowed the system to keep latency low while supporting concurrent users and asynchronous event processing.
+
+I also worked on authentication/RBAC, rate limiting, payment infrastructure, smart-contract settlement, and AWS-based deployment.
+
+Public evidence: Not publicly available due to project confidentiality.
