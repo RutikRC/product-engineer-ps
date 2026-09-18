@@ -1,0 +1,21 @@
+{
+  "name": "webhook-retry-engine",
+  "version": "1.0.0",
+  "description": "Problem 2: Webhook Retry Engine - reliable event delivery with idempotent ingestion, bounded retries, and inspectable attempt history.",
+  "type": "module",
+  "engines": {
+    "node": ">=20"
+  },
+  "scripts": {
+    "start": "node src/main.js",
+    "receiver": "node demo/receiver.js",
+    "demo": "node demo/run-demo.js",
+    "inspect": "node inspect.js",
+    "smoke": "node demo/smoke-process.mjs",
+    "test": "node --test --test-concurrency=1 --test-force-exit test/*.test.js"
+  },
+  "dependencies": {
+    "better-sqlite3": "^12.2.0",
+    "express": "^5.1.0"
+  }
+}
