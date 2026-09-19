@@ -6,7 +6,7 @@
 - **Email:** chavanrutik133@gmail.com
 - **GitHub:** https://github.com/RutikRC/product-engineer-ps
 - **Selected problem:** Problem 2 – Webhook Retry Engine
-- **Demo video:** _[INSERT YOUR 3–5 MIN LOOM/YOUTUBE/DRIVE DEMO VIDEO LINK HERE BEFORE FINAL SUBMISSION]_
+- **Demo video:** https://www.loom.com/share/d871a16f940f4b0dbf5f5f355251a2bc
   > **Note for candidate:** The challenge rules state that an accessible 3–5 minute narrated video is mandatory. The video must demonstrate:
   > 1. Running the project (receiver + engine).
   > 2. AC1: Successful event delivery (`201` -> `delivered`, 1 attempt).
